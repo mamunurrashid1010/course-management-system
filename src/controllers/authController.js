@@ -6,68 +6,81 @@ const emailLogger = require('../utils/emailLogger');
 const { generateCsrfToken } = require("../middleware/csrfProtection");
 
 exports.register = async (req, res) => {
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    const { name, email, password, confirm_password } = req.body;
 
-    // const { name, email, password } = req.body;
-    console.log(req.body)
-    // res.status(200).json({ message: 'Test Registration' });
+    if (password !== confirm_password) {
+        return res.status(400).send("<script>alert('Passwords do not match!'); window.location.href='/register';</script>");
+    }
 
-    // try {
-    //     let user = await User.findOne({ email });
-    //     if (user) return res.status(400).json({ message: 'User already exists' });
+    try {
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).send("<script>alert('User already exists!'); window.location.href='/register';</script>");
+        }
 
-    //     user = new User({ name, email, password });
-    //     await user.save();
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    //     // Simulate email verification
-    //     emailLogger(email, 'Verify Your Email', 'Click the link to verify your account.');
+        user = new User({ name, email, password: hashedPassword });
+        await user.save();
 
-    //     res.status(201).json({ message: 'Registration successful, check email for verification' });
-    // } catch (error) {
-    //     res.status(500).json({ message: 'Server error' });
-    // }
+        emailLogger(email, 'Verify Your Email', 'Click the link to verify your account.');
+
+        res.send("<script>alert('Registration successful! Check your email for verification.'); window.location.href='/login';</script>");
+    } catch (error) {
+        res.status(500).send("<script>alert('Server error! Try again.'); window.location.href='/register';</script>");
+    }
 };
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).send("Email and password are required.");
+        return res.status(400).send("<script>alert('Email and password are required!'); window.location.href='/login';</script>");
+    }
+
     try {
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!user) return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
+    
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!isMatch) return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
 
-        if (!user.isVerified) return res.status(403).json({ message: 'Email not verified' });
+        if (!user.isVerified) return res.status(400).send("<script>alert('Email not verified.'); window.location.href='/login';</script>");
 
-        const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(
+            { userId: user.id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
 
-        res.json({ token });
+        res.cookie("token", token, { httpOnly: true, secure: true, maxAge: 3600000 }); // 1 hour
+        res.redirect("/student-dashboard");
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).send("Server error.");
     }
 };
 
 // need to check
-exports.login1 = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
+// exports.login1 = async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
+//         const user = await User.findOne({ email });
 
-        if (!user || !(await user.comparePassword(password))) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
+//         if (!user || !(await user.comparePassword(password))) {
+//             return res.status(401).json({ message: "Invalid credentials" });
+//         }
 
-        const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        const csrfToken = generateCsrfToken(user._id);
+//         const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+//         const csrfToken = generateCsrfToken(user._id);
 
-        res.json({
-            message: "Login successful",
-            token,
-            csrfToken, // Send CSRF token to frontend
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
-    }
-};
+//         res.json({
+//             message: "Login successful",
+//             token,
+//             csrfToken, // Send CSRF token to frontend
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: "Server error" });
+//     }
+// };
