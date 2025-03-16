@@ -35,22 +35,24 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).send("Email and password are required.");
+        // return res.status(400).send("Email and password are required.");
         return res.status(400).send("<script>alert('Email and password are required!'); window.location.href='/login';</script>");
     }
 
     try {
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
+        if (!user) 
+            return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
     
-
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
+        if (!isMatch) 
+            return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
 
-        if (!user.isVerified) return res.status(400).send("<script>alert('Email not verified.'); window.location.href='/login';</script>");
+        if (!user.isVerified) 
+            return res.status(400).send("<script>alert('Email not verified.'); window.location.href='/login';</script>");
 
         const token = jwt.sign(
-            { userId: user.id, role: user.role },
+            { userId: user.id, name: user.name, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -84,3 +86,8 @@ exports.login = async (req, res) => {
 //         res.status(500).json({ message: "Server error" });
 //     }
 // };
+
+exports.logout = (req, res) => {
+    res.clearCookie("token"); // Remove the authentication token
+    res.redirect("/login"); // Redirect the user to the login page
+};

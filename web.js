@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
 const path = require('path');
@@ -34,6 +35,11 @@ app.use(express.static(path.join(__dirname, 'client')));
 app.use('/css', express.static(path.join(__dirname, 'src','client', 'css')));
 app.use('/vendors', express.static(path.join(__dirname, 'src', 'client', 'vendors')));
 
+// Setup Handlebars
+app.engine("hbs", exphbs.engine({ extname: "hbs", defaultLayout: false }));
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, 'src','client'));
+
 // default route
 app.get('/', (req, res) => {
     res.redirect('/login');
@@ -53,6 +59,15 @@ app.get('/register', (req, res) => {
 app.get('/student-dashboard', authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'client', 'studentDashboard.html'));
 });
+
+// student add request
+app.get('/student-add-request', authMiddleware, (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'client', 'addRequest.html'));
+});
+// student request list
+// app.get('/student-all-request', authMiddleware, (req, res) => {
+//     res.sendFile(path.join(__dirname, 'src', 'client', 'allRequest.html'));
+// });
 
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', requestRoutes);
