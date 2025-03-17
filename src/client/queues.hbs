@@ -14,7 +14,7 @@
   <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
   <meta name="author" content="Łukasz Holeczek">
   <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
-  <title>Student- Dashboard</title>
+  <title>Department Head- Dashboard</title>
   <link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="assets/favicon/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="assets/favicon/apple-icon-72x72.png">
@@ -36,9 +36,9 @@
   <link rel="stylesheet" href="vendors/simplebar/css/simplebar.css">
   <link rel="stylesheet" href="css/vendors/simplebar.css">
   <!-- Main styles for this application-->
-  <link href="css/style.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
   <!-- We use those styles to show code examples, you should remove them in your application.-->
-  <link href="css/examples.css" rel="stylesheet">
+  <link href="/css/examples.css" rel="stylesheet">
 </head>
 <body>
 <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
@@ -51,26 +51,17 @@
     </svg>
   </div>
   <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
-    <li class="nav-item"><a class="nav-link" href="/student-dashboard">
+    <li class="nav-item"><a class="nav-link" href="/api/department-head">
       <svg class="nav-icon">
         <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-speedometer"></use>
       </svg> Dashboard<span class="badge badge-sm bg-info ms-auto">NEW</span></a></li>
 
-    <li class="nav-item"><a class="nav-link" href="/student-add-request">
-      <svg class="nav-icon">
-        <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
-      </svg> Add Request</a>
-    </li>
-    <li class="nav-item"><a class="nav-link" href="/api/requests">
-      <svg class="nav-icon">
-        <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
-      </svg> Request List</a>
-    </li>
     <li class="nav-item"><a class="nav-link" href="/api/auth/logout">
       <svg class="nav-icon">
         <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
       </svg> Logout</a>
     </li>
+    
   </ul>
   <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
 </div>
@@ -86,7 +77,7 @@
         <use xlink:href="assets/brand/coreui.svg#full"></use>
       </svg></a>
       <ul class="header-nav d-none d-md-flex">
-        <li class="nav-item"><a class="nav-link" href="/student-dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/department-head">Dashboard</a></li>
         <!-- <li class="nav-item"><a class="nav-link" href="#">Users</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Settings</a></li> -->
       </ul>
@@ -109,40 +100,6 @@
           <div class="avatar avatar-md"><img class="avatar-img" src="assets/img/avatars/8.jpg" alt="user@email.com"></div>
         </a>
           <div class="dropdown-menu dropdown-menu-end pt-0">
-            <!-- <div class="dropdown-header bg-light py-2">
-              <div class="fw-semibold">Account</div>
-            </div><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-bell"></use>
-              </svg> Updates<span class="badge badge-sm bg-info ms-2">42</span></a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-envelope-open"></use>
-              </svg> Messages<span class="badge badge-sm bg-success ms-2">42</span></a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-task"></use>
-              </svg> Tasks<span class="badge badge-sm bg-danger ms-2">42</span></a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-comment-square"></use>
-              </svg> Comments<span class="badge badge-sm bg-warning ms-2">42</span></a>
-            <div class="dropdown-header bg-light py-2">
-              <div class="fw-semibold">Settings</div>
-            </div><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-user"></use>
-              </svg> Profile</a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-settings"></use>
-              </svg> Settings</a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-credit-card"></use>
-              </svg> Payments<span class="badge badge-sm bg-secondary ms-2">42</span></a><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-file"></use>
-              </svg> Projects<span class="badge badge-sm bg-primary ms-2">42</span></a>
-            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">
-              <svg class="icon me-2">
-                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
-              </svg> Lock Account</a> -->
             <a class="dropdown-item" href="/api/auth/logout">
               <svg class="icon me-2">
                 <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-account-logout"></use>
@@ -168,7 +125,19 @@
   <div class="body flex-grow-1 px-3">
     <div class="container-lg">
       <div class="col-12">
+            <div class="card mb-4">
+              <div class="card-header"><strong>Dashboard</strong></div>
+              <div class="card-body">
+                <h3>Queues</h3>
+                <ul>
+                    {{#each queues}}
+                        <li><a style="text-decoration: none;" href="/api/department-head/queue/{{_id}}">{{_id}} ({{count}} requests)</a></li>
+                    {{/each}}
+                </ul>
 
+                <h3>Need Help?</h3>
+                <a href="/api/department-head/random">I don’t know where to begin!</a>
+            </div>
       </div>
     </div>
   </div>

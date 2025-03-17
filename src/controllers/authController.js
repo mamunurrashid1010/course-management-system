@@ -105,7 +105,13 @@ exports.login = async (req, res) => {
         );
 
         res.cookie("token", token, { httpOnly: true, secure: true, maxAge: 3600000 }); // 1 hour
-        res.redirect("/student-dashboard");
+        if(user.role === 'admin'){
+            res.redirect("/api/department-head");
+        }
+        else{
+            res.redirect("/student-dashboard");
+        }
+        
     } catch (error) {
         res.status(500).send("Server error.");
     }
@@ -133,6 +139,33 @@ exports.login = async (req, res) => {
 //         res.status(500).json({ message: "Server error" });
 //     }
 // };
+
+exports.headRegister = async (req, res) => {
+    const { name, email, password, confirm_password } = req.body;
+
+    if (password !== confirm_password) {
+        console.log('Passwords do not match!')
+        return res.status(400).send("<script>alert('Passwords do not match!'); window.location.href='/department-head-register';</script>");
+    }
+
+    try {
+        let user = await User.findOne({ email });
+        if (user) {
+            console.log('User already exists!')
+            return res.status(400).send("<script>alert('User already exists!'); window.location.href='/department-head-register';</script>");
+        }
+        
+        const role = 'admin';
+        const isVerified = true;
+        user = new User({ name, email, role, isVerified, password });
+        await user.save();
+        
+        console.log('Registration successful')
+        res.send("<script>alert('Registration successful.'); window.location.href='/login';</script>");
+    } catch (error) {
+        res.status(500).send("<script>alert('Server error! Try again.'); window.location.href='/department-head-register';</script>");
+    }
+};
 
 exports.logout = (req, res) => {
     res.clearCookie("token"); // Remove the authentication token

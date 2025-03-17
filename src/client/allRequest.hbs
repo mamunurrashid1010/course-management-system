@@ -66,6 +66,11 @@
                 <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
               </svg> Request List</a>
             </li> 
+             <li class="nav-item"><a class="nav-link" href="/api/auth/logout">
+              <svg class="nav-icon">
+                <use xlink:href="vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
+              </svg> Logout</a>
+            </li>
       </ul>
       <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
     </div>
@@ -199,6 +204,7 @@
                             <th scope="col">Status</th>
                             <th scope="col">Estimated Processing Time</th>
                             <th scope="col">Created At</th>
+                            <th scope="col">Resolution Note</th>
                             <th scope="col">Action</th>
                           </tr>
                         </thead>
@@ -209,6 +215,7 @@
                               <td>{{this.status}}</td>
                               <td>{{this.estimatedCompletionTime}}</td>
                               <td>{{this.createdAt}}</td>
+                              <td>{{this.resolutionNote}}</td>
                               <td>
                                 <form action="/api/requests/cancel/{{this._id}}" method="POST">
                                     <button type="submit" class="btn btn-danger text-white btn-sm">Cancel</button>

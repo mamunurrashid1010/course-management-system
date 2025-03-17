@@ -69,10 +69,12 @@ app.get('/student-dashboard', authMiddleware, (req, res) => {
 app.get('/student-add-request', authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'client', 'addRequest.html'));
 });
-// student request list
-// app.get('/student-all-request', authMiddleware, (req, res) => {
-//     res.sendFile(path.join(__dirname, 'src', 'client', 'allRequest.html'));
-// });
+
+// department head register
+app.get('/department-head-register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'client', 'departmentHeadRegister.html'));
+});
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', requestRoutes);
