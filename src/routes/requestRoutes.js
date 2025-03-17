@@ -5,7 +5,7 @@ const { getStudentRequests, cancelRequest, submitRequest } = require('../control
 
 const router = express.Router();
 
-router.post("/", authMiddleware, submitRequest); // need to check
+router.post("/", authMiddleware, submitRequest);
 router.get('/', authMiddleware, getStudentRequests); 
 router.post('/cancel/:requestId', authMiddleware, cancelRequest);
 

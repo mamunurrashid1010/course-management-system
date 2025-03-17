@@ -1,35 +1,81 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const emailLogger = require('../utils/emailLogger');
 const { generateCsrfToken } = require("../middleware/csrfProtection");
 
 exports.register = async (req, res) => {
-    const { name, email, password, confirm_password } = req.body;
+    const { name, email, phone, degree, password, confirm_password } = req.body;
 
     if (password !== confirm_password) {
+        console.log('Passwords do not match!')
         return res.status(400).send("<script>alert('Passwords do not match!'); window.location.href='/register';</script>");
     }
 
     try {
         let user = await User.findOne({ email });
         if (user) {
+            console.log('User already exists!')
             return res.status(400).send("<script>alert('User already exists!'); window.location.href='/register';</script>");
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Generate a random activation code
+        const rac = crypto.randomBytes(3).toString('hex').toUpperCase();
 
-        user = new User({ name, email, password: hashedPassword });
+        user = new User({ name, email, phone, degree, rac, password });
         await user.save();
 
-        emailLogger(email, 'Verify Your Email', 'Click the link to verify your account.');
+        // Send the activation code via email
+        emailLogger(`
+        To: ${email}
+        Subject: Verify Your Email
+        Message: 
+        Hello, 
+        Your activation code is: ${rac}.
+        `);
 
-        res.send("<script>alert('Registration successful! Check your email for verification.'); window.location.href='/login';</script>");
+        res.send("<script>alert('Registration successful! Check your email for verification.'); window.location.href='/verify';</script>");
     } catch (error) {
         res.status(500).send("<script>alert('Server error! Try again.'); window.location.href='/register';</script>");
     }
 };
+
+exports.verifyAccount = async (req, res) => {
+    const { email, activationCode } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            console.log('User not found!')
+            return res.status(400).send("<script>alert('User not found!'); window.location.href='/verify';</script>");
+        }
+
+        if (user.isVerified) {
+            console.log('Account already verified!')
+            return res.status(400).send("<script>alert('Account already verified!'); window.location.href='/login';</script>");
+        }
+
+        if (user.rac !== activationCode) {
+            console.log('Invalid activation code!')
+            return res.status(400).send("<script>alert('Invalid activation code!'); window.location.href='/verify';</script>");
+        }
+
+        // Update the user as verified
+        user.isVerified = true;
+        user.rac = undefined; // Remove the activation code after successful verification
+        await user.save();
+        console.log('Account verified successfully! You can now login.')
+        res.send(
+            "<script>alert('Account verified successfully! You can now login.'); window.location.href='/login';</script>"
+        );
+    } catch (error) {
+        res.status(500).send("<script>alert('Server error! Try again.'); window.location.href='/verify';</script>");
+    }
+};
+
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
@@ -43,10 +89,11 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) 
             return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
-    
+
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) 
-            return res.status(400).send("<script>alert('Invalid credentials.'); window.location.href='/login';</script>");
+
+        if (!isMatch)
+            return res.status(400).send("<script>alert('Invalid password.'); window.location.href='/login';</script>");
 
         if (!user.isVerified) 
             return res.status(400).send("<script>alert('Email not verified.'); window.location.href='/login';</script>");

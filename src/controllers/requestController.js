@@ -24,11 +24,11 @@ exports.submitRequest = async (req, res) => {
         To: ${req.user.email}
         Subject: Request Submitted Successfully
         Message: Hello ${req.user.name}, your request for '${category}' has been submitted successfully.
-        Estimated Completion Time: ${estimatedTime}
+        Estimated Processing Time: ${estimatedTime}
         `);
 
         // res.json({ message: 'Request submitted successfully', request: newRequest });
-        res.send("<script>alert('Request submitted successfully'); window.location.href='/student-add-request';</script>");
+        res.send("<script> window.location.href='/student-add-request';</script>");
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -116,7 +116,10 @@ exports.cancelRequest = async (req, res) => {
     try {
         const { requestId } = req.params;
         const request = await Request.findById(requestId);
-        if (!request) return res.status(404).json({ message: 'Request not found' });
+        if (!request){
+            console.log('Request not found')
+            // return res.status(404).json({ message: 'Request not found' });
+        }
 
         if (request.status !== 'pending'){
             // return res.status(400).json({ message: 'Cannot cancel a resolved request' });

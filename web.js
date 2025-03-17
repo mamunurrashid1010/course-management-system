@@ -22,6 +22,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true })); // Parse form data
 app.use(bodyParser.json()); // Parse JSON requests
@@ -53,6 +54,10 @@ app.get('/login', (req, res) => {
 // Serve Registration Page
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'client', 'register.html'));
+});
+// Serve Verify Page
+app.get('/verify', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'client', 'verify.html'));
 });
 
 // student dashboard
